@@ -1,0 +1,112 @@
+#include <stdio.h>
+
+char board[3][3] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+char player1Name[50];
+char player2Name[50];
+char currentPlayer = 'X';
+
+void printBoard() {
+    printf("Current Board:\n");
+    printf(" %c | %c | %c\n", board[0][0], board[0][1], board[0][2]);
+    printf("-----------\n");
+    printf(" %c | %c | %c\n", board[1][0], board[1][1], board[1][2]);
+    printf("-----------\n");
+    printf(" %c | %c | %c\n", board[2][0], board[2][1], board[2][2]);
+}
+
+int isMoveValid(int row, int col) {
+    return (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ');
+}
+
+void makeMove(int row, int col) {
+    board[row][col] = currentPlayer;
+}
+
+int isGameOver() {
+    // Check rows, columns, and diagonals for a win
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
+            return 1;  // Row win
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
+            return 1;  // Column win
+    }
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
+        return 1;  // Diagonal win
+    if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
+        return 1;  // Diagonal win
+
+    // Check if the board is full (tie)
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] == ' ')
+                return 0;  // Game not over yet
+        }
+    }
+
+    return -1;  // Tie
+}
+
+void switchPlayer() {
+    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+}
+
+void getPlayerNames() {
+    printf("Welcome to the Tic-Tac-Toe Game!\a \n");
+
+    printf("Enter Player 1's name: ");
+    scanf("%s", player1Name);
+
+    printf("Enter Player 2's name: ");
+    scanf("%s", player2Name);
+
+    printf("Great! Let's get started, %s and %s!\n", player1Name, player2Name);
+}
+
+void displayInitialInstructions() {
+    printf("Here is the game board. Each cell is represented by its row and column number.\n\n");
+
+    printf(" 0 | 1 | 2\n");
+    printf("-----------\n");
+    printf(" 3 | 4 | 5\n");
+    printf("-----------\n");
+    printf(" 6 | 7 | 8\n\n");
+
+    printf("To make a move, enter the corresponding cell number.\n\n");
+}
+
+int main() {
+    int row, col;
+
+    getPlayerNames();
+    displayInitialInstructions();
+
+    do {
+        printBoard();
+        printf("%s, it's your turn. Enter the cell number where you want to place your '%c': ", (currentPlayer == 'X') ? player1Name : player2Name, currentPlayer);
+        scanf("%d", &row);
+
+        col = row % 3;
+        row /= 3;
+
+        if (isMoveValid(row, col)) {
+            makeMove(row, col);
+
+            int result = isGameOver();
+            if (result == 1) {
+                printBoard();
+                printf("%s wins!\n", (currentPlayer == 'X') ? player1Name : player2Name);
+                break;
+            } else if (result == -1) {
+                printBoard();
+                printf("It's a tie!\n");
+                break;
+            }
+
+            switchPlayer();
+        } else {
+            printf("Invalid move. Try again.\n");
+        }
+    } while (1);
+
+    return 0;
+}
